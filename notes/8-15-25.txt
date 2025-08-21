@@ -1,0 +1,25 @@
+8.15.25
+Author: Joseph Erlinger
+
+Background:
+- I've pulled an earlier prototype that I've adaptly named `Docker Web
+Crawler`. All it contained was a compose.yaml file that produces a Postgres,
+Ollama, and Milvus container.
+
+Goal:
+- Zachary demostrated a good solution to parallel crawling the `uoregon.edu`
+domain and producing a sitemap. This project `Container Approach Web 
+Processing` aims to feed the `uoregon.edu` sitemap into a data processing
+pipeline.
+
+## Layout
+
+- Docker containers for: B4A + requests, C4A, Postgres, and Milvus.
+
+## Pipeline ('Learn', 'Extract', 'Process', and 'Store')
+
+- B4A & requests, async-stream parallel, collects urls from `uoregon.edu`.
+- C4A, async-stream + parallel, extracts markdown from urls.
+- Extracted markdown is processed in a storage-friendly format.
+- Processed extracted markdown is stored in databases (milvus or postgres).
+

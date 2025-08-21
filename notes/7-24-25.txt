@@ -1,0 +1,133 @@
+7-24-25: UO LLLM Progress Notes
+Author: Joseph Erlinger
+
+
+Goal:
+Lay the foundation to webscrap the UO Website locally (i.e. no cloud)
+
+
+Plan:
+- host relational database
+- host local llm via Ollama
+
+
+Next topic:
+- webscrap UO
+
+
+------------------
+1. Docker Database
+------------------
+
+
+A cursory ChatGPT search lead me to investigate postgreSQL. I skimmed Caleb
+Cury's YT video on "Run Postgres in Docker ..." to find the stack: pgAdmin4
+(gui tool), psql (cli tool), postgres. I confirmed with a quick Google Search
+to confirm these tools are popular.
+
+
+1.0. Helpful Documentation:
+
+
+- https://hub.docker.com/_/postgres
+
+
+1.1. Docker Prerequisites:
+
+
+- Docker
+- psql (MacOS: https://wiki.postgresql.org/wiki/Homebrew)
+- pgadmin4 (https://www.pgadmin.org/download)
+* optionally, to download just psql
+(https://stackoverflow.com/questions/44654216/correct-way-to-install-psql-without-full-postgres-on-macos)
+
+
+1.2. Postgres Container Implementation:
+
+
+- I opted for the (lighter) alpine version of Postgres.
+  e.g. image: postgres:alpine
+- I kept the username and the (required) password default.
+  i.e. postgres/example for user/password
+- I mapped the port "5431" to the postgres port "5432".
+  e.g. "5431:5432"
+- I mounted a volume for data persistence (data is maintained even if the
+container is removed). The volume must be mounted at /var/lib/postgresql/data.
+  e.g. volume: postgres-data:/var/lib/postgresql/data
+
+
+1.3. Helpful commands
+
+
+docker exec -it [container name] [command]
+
+e.g. docker exec -it postgres-container psql -U postgres
+> interact with the postgres database via the cli.
+
+e.g. docker exec -it postgres-container bash
+> run `bash` inside the postgres-container.
+
+
+----------------
+2. Docker Ollama
+----------------
+
+
+2.0. Helpful links:
+
+
+- (github documentation) https://www.github.com/ollama/ollama
+- (ollama library of models) https://www.ollama.com/library
+
+
+2.1. Ollama Container Implementation:
+
+
+(all standard)
+- image: ollama/ollama
+- port mapping: 11434:11434
+- volume: ollama:/root/.ollama
+
+
+2.2. Useful Command:
+
+
+ollama run [model name]
+> Pull the model the Internet if not already installed, and run it.
+
+
+---------------------------------------------------
+3. Docker Compose file (must be named compose.yaml)
+---------------------------------------------------
+
+
+# This file is a slightly modified version of the compose.yaml described here: https://hub.docker.com/_/postgres
+# Use postgres/example user/password credentials
+
+services:
+
+  db:
+    image: postgres:alpine
+    container_name: postgres
+    restart: always
+    shm_size: 128mb
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: example
+    ports:
+      - "5431:5432"
+
+  ollama:
+    image: ollama/ollama
+    container_name: ollama
+    restart: unless-stopped
+    volumes:
+      - ollama:/root/.ollama
+    ports:
+      - "11434:11434"
+
+volumes:
+  postgres-data:
+  ollama:
+
