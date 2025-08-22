@@ -1,0 +1,41 @@
+8.21.25
+Author: Joseph
+
+# --- Useful Shell Commands ---
+- docker exec -it ollama sh                                                    # open a interactive terminal for the `ollama` container and run shell.
+- ollama list                                                                  # list all installed models.
+- ollama show --modelfile [model]                                              # `cat` the modelfile for a model.
+- curl http://localhost:11434/api/[endpoint] -d [json string]                  # manually interact with a model.
+
+# --- Ollama-Python library API ---
+REF: https://github.com/ollama/ollama/blob/main/docs/api.md
+- ollama.generate()                                                            #< hits endpoint api/generate
+- ollama.embed()                                                               #< hits endpoint api/embeddings (IMPORTANT: use embed and not embeddings <reason: depreciated>)
+- ollama.chat()                                                                #< hits endpoint api/chat.
+
+# --- Developer Log ---
+
+I visited ollama.com/library and ran the following command in the inspect tool:
+
+```
+[...$$('span.group-hover\\:underline.truncate')].map(span => span.innerHTML)
+```
+
+The output was a list of model names, which I inputed to ChatGPT.
+
+Chat Example:
+
+prompt: "You are a senior developer assisting with a project that uses
+Ollama. Which of the following ollama models is best for vector embeddings?
+[pasted object of Ollama models]"
+
+response (concise): "nomic-embed-text"
+
+REF: https://ollama.com/library/nomic-embed-text
+
+> docker exec -it ollama sh
+# ollama pull nomic-embed-text
+success
+
+I wrote a test to simply embed one string with the nomic-embed-text model. Run
+the test using the command `python3 tests/nomic_embed_text.py`
